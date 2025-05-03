@@ -42,29 +42,36 @@ body {background:#000;color:white;text-align:center;margin:0;padding:0;overflow:
 const prizes=[
 {name:"Кола",chance:10,promo:"4217"},{name:"Онигири с крабом",chance:10,promo:"7351"},{name:"Сырные ломтики",chance:5,promo:"1628"},{name:"Фри",chance:10,promo:"9046"},{name:"Наггетсы",chance:10,promo:"5832"},{name:"Маки с лососем",chance:5,promo:"3174"},{name:"Запечённый мини-ролл",chance:5,promo:"8462"},{name:"Пицца Маргарита",chance:1,promo:"2095"},{name:"Крылья 8 шт",chance:1,promo:"7901"},{name:"Онигирадзу с крабом",chance:1,promo:"4360"},{name:"Филадельфия классическая",chance:0.01,promo:"1203"},{name:"1000 бонусов",chance:41.9889,promo:"8888"},{name:"Сет 'Венеция'",chance:0.001,promo:"0001"},{name:"Суперприз 100000 бонусов",chance:0.0001,promo:"7897"}
 ];
+
 const wheel=document.getElementById("wheel"),result=document.getElementById("result"),instruction=document.getElementById("instruction"),message=document.getElementById("message"),countdown=document.getElementById("countdown");
 const leverSound=document.getElementById("leverSound"),spinSound=document.getElementById("spinSound"),winSound=document.getElementById("winSound");
 const spinButton=document.getElementById("spinButton");
 let spinning=false;
 
 spinButton.onclick=()=>{
-// Только разблокировка звуков + рычаг + вращение
-[leverSound, spinSound].forEach(sound => {
+// Разрешаем звуки (разблокировка)
+[leverSound, spinSound, winSound].forEach(sound => {
 sound.play().catch(()=>{}).then(()=>{sound.pause();sound.currentTime = 0;});
 });
 
 if(spinning) return;
 spinning = true;
 
+// ШЕЛЧОК (рычаг)
 leverSound.play();
-spinSound.play();
 
 localStorage.setItem("lastSpinTime", new Date().getTime());
+
 const win = selectPrize();
 const selectedIndex = prizes.indexOf(win);
 const sectorSize = 360/prizes.length;
 const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
+
+// Пауза -> Начало кручения -> Звук вращения
+setTimeout(()=>{
+spinSound.play();
 wheel.style.transform=`rotate(${targetAngle}deg)`;
+}, 300);
 
 setTimeout(()=>{
 spinSound.pause(); spinSound.currentTime=0;
@@ -75,7 +82,7 @@ instruction.style.display="block";
 for(let i=0;i<200;i++)createFirework();
 setTimeout(()=>{message.style.display="none"},5000);
 showCountdown(86400000);
-},5200);
+},5500);
 };
 
 const lastSpin = localStorage.getItem("lastSpinTime");
