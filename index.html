@@ -6,38 +6,155 @@
 <title>Колесо Фортуны | Лосось и Чеддер</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Russo+One&display=swap" rel="stylesheet">
 <style>
-html {
-  zoom: 0.3; /* по умолчанию маленькое для телефонов */
+body {
+  background: #000;
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+  margin-top: 20px;
+  font-size: 50px;
+  color: #ffcc00;
+  animation: glow 2s infinite, blink 2s infinite;
+  font-family: 'Bebas Neue', cursive;
+  letter-spacing: 2px;
+}
+
+@keyframes blink {
+  0%, 50%, 100% {opacity: 1}
+  25%, 75% {opacity: 0.7}
+}
+
+@keyframes glow {
+  0% {text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00}
+  50% {text-shadow: 0 0 20px #ffff00, 0 0 40px #ffff00}
+  100% {text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00}
+}
+
+#wheel-container {
+  margin: 20px auto;
+  width: 400px;
+  height: 400px;
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 0 60px rgba(255,255,0,0.7);
+  border-radius: 50%;
+}
+
+#wheel {
+  width: 100%;
+  transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
+  border-radius: 50%;
+  border: 10px solid white;
+}
+
+.pointer {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 20px solid red;
+  transition: transform 0.1s ease;
+}
+
+.pointer.active {
+  transform: translateX(-50%) rotate(-20deg);
+}
+
+#lever {
+  position: absolute;
+  top: 100px;
+  left: 430px;
+  width: 20px;
+  height: 200px;
+  background: silver;
+  border-radius: 10px;
+}
+
+#lever-ball {
+  position: absolute;
+  top: -30px;
+  left: -15px;
+  width: 50px;
+  height: 50px;
+  background: red;
+  border-radius: 50%;
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 30px;
+  color: #00ff00;
+  font-family: 'Russo One', sans-serif;
+  text-shadow: 0 0 15px #00ff00;
+}
+
+#instruction {
+  margin-top: 10px;
+  font-size: 22px;
+  color: #ffcc00;
+  text-shadow: 0 0 10px #ffcc00;
+  animation: blink 1.5s infinite;
+  font-family: 'Bebas Neue', cursive;
+  display: none;
+}
+
+#message {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 60px;
+  color: yellow;
+  text-shadow: 3px 3px 5px black;
+  display: none;
+  font-family: 'Russo One', cursive;
+}
+
+.confetti {
+  position: fixed;
+  width: 15px;
+  height: 15px;
+  background: yellow;
+  opacity: .8;
+  border-radius: 50%;
+  animation: explode 3s ease-out forwards;
+}
+
+@keyframes explode {
+  0% {transform: translate(0,0) scale(1); opacity: 1}
+  100% {transform: translate(var(--x),var(--y)) scale(0.5); opacity: 0}
+}
+
+#countdown {
+  margin-top: 10px;
+  font-size: 20px;
+  color: #ff5555;
+}
+
+@media (max-width: 480px) {
+  h1 {font-size: 30px;}
+  #wheel-container {width: 250px; height: 250px;}
+  #lever {left: 290px; height: 150px;}
+  #lever-ball {width: 35px; height: 35px;}
+  #result {font-size: 20px;}
 }
 
 @media (min-width: 481px) and (max-width: 1024px) {
-  html {
-    zoom: 0.6; /* для планшетов чуть больше */
-  }
+  #wheel-container {width: 300px; height: 300px;}
+  #lever {left: 340px;}
 }
-
-@media (min-width: 1025px) {
-  html {
-    zoom: 1; /* для ПК оригинальный размер */
-  }
-}
-
-body {background:#000;color:white;text-align:center;margin:0;padding:0;overflow:hidden;font-family:'Poppins',sans-serif}
-h1 {margin-top:20px;font-size:60px;color:#ffcc00;animation:glow 2s infinite,blink 2s infinite;font-family:'Bebas Neue',cursive;letter-spacing:2px}
-@keyframes blink{0%,50%,100%{opacity:1}25%,75%{opacity:0.7}}
-@keyframes glow{0%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00}50%{text-shadow:0 0 20px #ffff00,0 0 40px #ffff00}100%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00}}
-#wheel-container {margin:20px auto;width:400px;height:400px;position:relative;display:inline-block;box-shadow:0 0 60px rgba(255,255,0,0.7);border-radius:50%}
-#wheel {width:100%;transition:transform 5s cubic-bezier(0.33, 1, 0.68, 1);border-radius:50%;border:10px solid white}
-.pointer {position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid red;transition:transform 0.1s ease;}
-.pointer.active {transform:translateX(-50%) rotate(-20deg);}
-#lever {position:absolute;top:100px;left:440px;width:20px;height:200px;background:silver;border-radius:10px}
-#lever-ball {position:absolute;top:-30px;left:-15px;width:50px;height:50px;background:red;border-radius:50%;cursor:grab;transition:transform 0.2s ease}
-#result {margin-top:20px;font-size:40px;color:#00ff00;font-family:'Russo One',sans-serif;text-shadow:0 0 15px #00ff00}
-#instruction {margin-top:10px;font-size:26px;color:#ffcc00;text-shadow:0 0 10px #ffcc00;animation:blink 1.5s infinite;font-family:'Bebas Neue',cursive;display:none}
-#message {position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);font-size:80px;color:yellow;text-shadow:3px 3px 5px black;display:none;font-family:'Russo One',cursive}
-.confetti {position:fixed;width:15px;height:15px;background:yellow;opacity:.8;border-radius:50%;animation:explode 3s ease-out forwards}
-@keyframes explode{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(0.5);opacity:0}}
-#countdown {margin-top:10px;font-size:24px;color:#ff5555;}
 </style>
 </head>
 <body>
