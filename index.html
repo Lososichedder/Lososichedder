@@ -6,154 +6,34 @@
 <title>Колесо Фортуны | Лосось и Чеддер</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Russo+One&display=swap" rel="stylesheet">
 <style>
-body {
-  background: #000;
-  color: white;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  font-family: 'Poppins', sans-serif;
-}
-
-h1 {
-  margin-top: 20px;
-  font-size: 50px;
-  color: #ffcc00;
-  animation: glow 2s infinite, blink 2s infinite;
-  font-family: 'Bebas Neue', cursive;
-  letter-spacing: 2px;
-}
-
-@keyframes blink {
-  0%, 50%, 100% {opacity: 1}
-  25%, 75% {opacity: 0.7}
-}
-
-@keyframes glow {
-  0% {text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00}
-  50% {text-shadow: 0 0 20px #ffff00, 0 0 40px #ffff00}
-  100% {text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00}
-}
-
-#wheel-container {
-  margin: 20px auto;
-  width: 400px;
-  height: 400px;
-  position: relative;
-  display: inline-block;
-  box-shadow: 0 0 60px rgba(255,255,0,0.7);
-  border-radius: 50%;
-}
-
-#wheel {
-  width: 100%;
-  transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
-  border-radius: 50%;
-  border: 10px solid white;
-}
-
-.pointer {
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 20px solid red;
-  transition: transform 0.1s ease;
-}
-
-.pointer.active {
-  transform: translateX(-50%) rotate(-20deg);
-}
-
-#lever {
-  position: absolute;
-  top: 100px;
-  left: 430px;
-  width: 20px;
-  height: 200px;
-  background: silver;
-  border-radius: 10px;
-}
-
-#lever-ball {
-  position: absolute;
-  top: -30px;
-  left: -15px;
-  width: 50px;
-  height: 50px;
-  background: red;
-  border-radius: 50%;
-  cursor: grab;
-  transition: transform 0.2s ease;
-}
-
-#result {
-  margin-top: 20px;
-  font-size: 30px;
-  color: #00ff00;
-  font-family: 'Russo One', sans-serif;
-  text-shadow: 0 0 15px #00ff00;
-}
-
-#instruction {
-  margin-top: 10px;
-  font-size: 22px;
-  color: #ffcc00;
-  text-shadow: 0 0 10px #ffcc00;
-  animation: blink 1.5s infinite;
-  font-family: 'Bebas Neue', cursive;
-  display: none;
-}
-
-#message {
-  position: fixed;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  font-size: 60px;
-  color: yellow;
-  text-shadow: 3px 3px 5px black;
-  display: none;
-  font-family: 'Russo One', cursive;
-}
-
-.confetti {
-  position: fixed;
-  width: 15px;
-  height: 15px;
-  background: yellow;
-  opacity: .8;
-  border-radius: 50%;
-  animation: explode 3s ease-out forwards;
-}
-
-@keyframes explode {
-  0% {transform: translate(0,0) scale(1); opacity: 1}
-  100% {transform: translate(var(--x),var(--y)) scale(0.5); opacity: 0}
-}
-
-#countdown {
-  margin-top: 10px;
-  font-size: 20px;
-  color: #ff5555;
-}
+body {background:#000;color:white;text-align:center;margin:0;padding:0;overflow:hidden;font-family:'Poppins',sans-serif}
+h1 {margin-top:20px;font-size:60px;color:#ffcc00;animation:glow 2s infinite,blink 2s infinite;font-family:'Bebas Neue',cursive;letter-spacing:2px}
+@keyframes blink{0%,50%,100%{opacity:1}25%,75%{opacity:0.7}}
+@keyframes glow{0%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00}50%{text-shadow:0 0 20px #ffff00,0 0 40px #ffff00}100%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00}}
+#wheel-container {margin:20px auto;width:400px;height:400px;position:relative;display:inline-block;box-shadow:0 0 60px rgba(255,255,0,0.7);border-radius:50%}
+#wheel {width:100%;transition:transform 5s cubic-bezier(0.33, 1, 0.68, 1);border-radius:50%;border:10px solid white}
+.pointer {position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid red}
+#result {margin-top:20px;font-size:40px;color:#00ff00;font-family:'Russo One',sans-serif;text-shadow:0 0 15px #00ff00}
+#instruction {margin-top:10px;font-size:26px;color:#ffcc00;text-shadow:0 0 10px #ffcc00;animation:blink 1.5s infinite;font-family:'Bebas Neue',cursive;display:none}
+#message {position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);font-size:80px;color:yellow;text-shadow:3px 3px 5px black;display:none;font-family:'Russo One',cursive}
+.confetti {position:fixed;width:15px;height:15px;background:yellow;opacity:.8;border-radius:50%;animation:explode 3s ease-out forwards}
+@keyframes explode{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(0.5);opacity:0}}
+#countdown {margin-top:10px;font-size:24px;color:#ff5555;}
+#spinButton {margin:30px auto;padding:20px 40px;font-size:30px;background:#ffcc00;color:#000;border:none;border-radius:10px;cursor:pointer;font-family:'Bebas Neue',cursive;box-shadow:0 0 20px #ffcc00;transition:0.3s;display:block}
+#spinButton:hover {background:#ffaa00;box-shadow:0 0 30px #ffaa00}
 
 @media (max-width: 480px) {
-  h1 {font-size: 30px;}
-  #wheel-container {width: 300px; height: 300px;}
-  #lever {left: 340px; height: 150px;}
-  #lever-ball {width: 40px; height: 40px;}
-  #result {font-size: 20px;}
-}
-
-@media (min-width: 481px) and (max-width: 1024px) {
-  #wheel-container {width: 350px; height: 350px;}
-  #lever {left: 390px;}
+  #wheel-container {
+    width: 300px;
+    height: 300px;
+  }
+  h1 {
+    font-size: 30px;
+  }
+  #spinButton {
+    font-size: 24px;
+    padding: 15px 30px;
+  }
 }
 </style>
 </head>
@@ -165,8 +45,10 @@ h1 {
 <audio id="winSound" src="win-sound.mp3"></audio>
 
 <div style="position:relative;display:inline-block">
-<div id="wheel-container"><div class="pointer" id="pointer"></div><img id="wheel" src="kolyoso.png" alt="Wheel"></div>
-<div id="lever"><div id="lever-ball"></div></div></div>
+<div id="wheel-container"><div class="pointer"></div><img id="wheel" src="kolyoso.png" alt="Wheel"></div>
+</div>
+
+<button id="spinButton">КРУТИТЬ</button>
 
 <div id="result"></div>
 <div id="instruction">Введите этот промо в приложении и заберите приз в течении 24 часов</div>
@@ -191,10 +73,11 @@ const prizes=[
 {name:"Суперприз 100000 бонусов",chance:0.0001,promo:"7897"}
 ];
 
-const wheel=document.getElementById("wheel"),result=document.getElementById("result"),instruction=document.getElementById("instruction"),leverBall=document.getElementById("lever-ball"),message=document.getElementById("message"),countdown=document.getElementById("countdown"),pointer=document.getElementById("pointer");
+const wheel=document.getElementById("wheel"),result=document.getElementById("result"),instruction=document.getElementById("instruction"),message=document.getElementById("message"),countdown=document.getElementById("countdown");
 const leverSound=document.getElementById("leverSound"),spinSound=document.getElementById("spinSound"),winSound=document.getElementById("winSound");
+const spinButton=document.getElementById("spinButton");
 
-let spinning=false,pulling=false,startY=0;
+let spinning=false;
 
 const lastSpin = localStorage.getItem("lastSpinTime");
 const now = new Date().getTime();
@@ -213,7 +96,6 @@ function showCountdown(ms) {
             clearInterval(interval);
             countdown.innerHTML = "Можно крутить!";
             spinning = false;
-            leverBall.style.cursor = "grab";
             return;
         }
         const h = Math.floor(ms / 3600000);
@@ -232,19 +114,11 @@ function selectPrize() {
     }
 }
 
-leverBall.onmousedown=e=>{if(!spinning){pulling=true;startY=e.clientY;leverBall.style.cursor="grabbing"}};
-document.onmousemove=e=>{if(!pulling)return;let d=Math.max(0,Math.min(120,e.clientY-startY));leverBall.style.transform=`translateY(${d}px)`};
-document.onmouseup=()=>{
-    if(!pulling) return;
-    pulling = false;
-    leverBall.style.cursor = "grab";
-    leverBall.style.transform = "translateY(0px)";
-
+spinButton.onclick=()=>{
     if(spinning) return;
-    
-    leverSound.play();
     spinning = true;
 
+    leverSound.play();
     localStorage.setItem("lastSpinTime", new Date().getTime());
 
     const win = selectPrize();
@@ -255,13 +129,7 @@ document.onmouseup=()=>{
     spinSound.play();
     wheel.style.transform=`rotate(${targetAngle}deg)`;
 
-    const pointerInterval = setInterval(() => {
-        pointer.classList.toggle("active");
-    }, 100);
-
     setTimeout(()=>{
-        clearInterval(pointerInterval);
-        pointer.classList.remove("active");
         spinSound.pause();
         spinSound.currentTime=0;
         result.innerHTML="🎉 Вы выиграли: "+win.name+" — Промо: "+win.promo;
@@ -277,5 +145,4 @@ document.onmouseup=()=>{
 function createFirework(){let c=document.createElement("div");c.className="confetti";c.style.left=window.innerWidth/2+"px";c.style.top=window.innerHeight/2+"px";c.style.setProperty('--x',(Math.random()*600-300)+"px");c.style.setProperty('--y',(Math.random()*600-300)+"px");c.style.background="hsl("+Math.random()*360+",100%,50%)";document.body.appendChild(c);setTimeout(()=>c.remove(),3000)}
 function showMessage(t){message.textContent=t;message.style.display="block"}
 </script>
-</body>
-</html>
+</body></html>
