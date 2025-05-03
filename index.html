@@ -49,15 +49,16 @@ const spinButton=document.getElementById("spinButton");
 let spinning=false;
 
 spinButton.onclick=()=>{
-// Разрешаем звуки (разблокировка)
-[leverSound, spinSound, winSound].forEach(sound => {
+
+// Только разблокировка рычага и кручения
+[leverSound, spinSound].forEach(sound => {
 sound.play().catch(()=>{}).then(()=>{sound.pause();sound.currentTime = 0;});
 });
 
 if(spinning) return;
 spinning = true;
 
-// ШЕЛЧОК (рычаг)
+// ЩЕЛЧОК
 leverSound.play();
 
 localStorage.setItem("lastSpinTime", new Date().getTime());
@@ -67,12 +68,13 @@ const selectedIndex = prizes.indexOf(win);
 const sectorSize = 360/prizes.length;
 const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
 
-// Пауза -> Начало кручения -> Звук вращения
+// Старт кручения + звук вращения
 setTimeout(()=>{
 spinSound.play();
 wheel.style.transform=`rotate(${targetAngle}deg)`;
 }, 300);
 
+// Окончание -> фанфары
 setTimeout(()=>{
 spinSound.pause(); spinSound.currentTime=0;
 winSound.play().catch(()=>{});
