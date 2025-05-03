@@ -7,156 +7,101 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Russo+One&display=swap" rel="stylesheet">
 <style>
 body {background:#000;color:white;text-align:center;margin:0;padding:0;overflow:hidden;font-family:'Poppins',sans-serif}
-
 #wheel-container {margin:40px auto;width:400px;height:400px;position:relative;display:inline-block;box-shadow:0 0 60px rgba(255,255,0,0.7);border-radius:50%}
 #wheel {width:100%;transition:transform 5s cubic-bezier(0.33, 1, 0.68, 1);border-radius:50%;border:10px solid white}
 .pointer {position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid red}
 #result {margin-top:10px;font-size:28px;color:#00ff00;font-family:'Russo One',sans-serif;text-shadow:0 0 15px #00ff00}
-#instruction {margin-top:10px;font-size:16px;color:#ffcc00;text-shadow:0 0 5px #ffcc00;display:none;line-height:1.5; font-family: 'Russo One', sans-serif;}
+#instruction {margin-top:20px;font-size:13px;color:#ffcc00;text-shadow:0 0 5px #ffcc00;display:none;line-height:1.5; font-family: 'Russo One', sans-serif; max-width:90%; margin-left:auto; margin-right:auto; word-wrap:break-word;}
 #message {position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);font-size:50px;color:yellow;text-shadow:3px 3px 5px black;display:none;font-family:'Russo One',cursive}
 .confetti {position:fixed;width:15px;height:15px;background:yellow;opacity:.8;border-radius:50%;animation:explode 3s ease-out forwards}
 @keyframes explode{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(0.5);opacity:0}}
 #countdown {margin-top:10px;font-size:20px;color:#ff5555;}
 #spinButton {margin:20px auto;padding:15px 30px;font-size:24px;background:#ffcc00;color:#000;border:none;border-radius:10px;cursor:pointer;font-family:'Russo One',sans-serif;box-shadow:0 0 20px #ffcc00;transition:0.3s;display:block}
 #spinButton:hover {background:#ffaa00;box-shadow:0 0 30px #ffaa00}
-
 @media (max-width: 480px) {
-  #wheel-container {
-    width: 300px;
-    height: 300px;
-    margin-top: 40px;
-  }
-  #spinButton {
-    font-size:20px;
-    padding:12px 25px;
-  }
-  #message {
-    font-size:40px;
-  }
-  #result {
-    font-size:22px;
-  }
+#wheel-container {width: 300px;height: 300px;margin-top: 40px;}
+#spinButton {font-size:20px;padding:12px 25px;}
+#message {font-size:40px;}
+#result {font-size:22px;}
 }
 </style>
 </head>
 <body>
-
 <audio id="leverSound" src="lever-pull.mp3" preload="auto"></audio>
 <audio id="spinSound" src="wheel-spin.mp3" preload="auto"></audio>
 <audio id="winSound" src="win-sound.mp3" preload="auto"></audio>
-
 <div style="position:relative;display:inline-block">
 <div id="wheel-container"><div class="pointer"></div><img id="wheel" src="kolyoso.png" alt="Wheel"></div>
 </div>
-
 <button id="spinButton">КРУТИТЬ</button>
-
 <div id="result"></div>
 <div id="instruction">Введите этот промо в приложении<br>и заберите приз в течение 24 часов</div>
 <div id="countdown"></div>
 <div id="message"></div>
-
 <script>
 const prizes=[
-{name:"Кола",chance:10,promo:"4217"},
-{name:"Онигири с крабом",chance:10,promo:"7351"},
-{name:"Сырные ломтики",chance:5,promo:"1628"},
-{name:"Фри",chance:10,promo:"9046"},
-{name:"Наггетсы",chance:10,promo:"5832"},
-{name:"Маки с лососем",chance:5,promo:"3174"},
-{name:"Запечённый мини-ролл",chance:5,promo:"8462"},
-{name:"Пицца Маргарита",chance:1,promo:"2095"},
-{name:"Крылья 8 шт",chance:1,promo:"7901"},
-{name:"Онигирадзу с крабом",chance:1,promo:"4360"},
-{name:"Филадельфия классическая",chance:0.01,promo:"1203"},
-{name:"1000 бонусов",chance:41.9889,promo:"8888"},
-{name:"Сет 'Венеция'",chance:0.001,promo:"0001"},
-{name:"Суперприз 100000 бонусов",chance:0.0001,promo:"7897"}
+{name:"Кола",chance:10,promo:"4217"},{name:"Онигири с крабом",chance:10,promo:"7351"},{name:"Сырные ломтики",chance:5,promo:"1628"},{name:"Фри",chance:10,promo:"9046"},{name:"Наггетсы",chance:10,promo:"5832"},{name:"Маки с лососем",chance:5,promo:"3174"},{name:"Запечённый мини-ролл",chance:5,promo:"8462"},{name:"Пицца Маргарита",chance:1,promo:"2095"},{name:"Крылья 8 шт",chance:1,promo:"7901"},{name:"Онигирадзу с крабом",chance:1,promo:"4360"},{name:"Филадельфия классическая",chance:0.01,promo:"1203"},{name:"1000 бонусов",chance:41.9889,promo:"8888"},{name:"Сет 'Венеция'",chance:0.001,promo:"0001"},{name:"Суперприз 100000 бонусов",chance:0.0001,promo:"7897"}
 ];
-
 const wheel=document.getElementById("wheel"),result=document.getElementById("result"),instruction=document.getElementById("instruction"),message=document.getElementById("message"),countdown=document.getElementById("countdown");
 const leverSound=document.getElementById("leverSound"),spinSound=document.getElementById("spinSound"),winSound=document.getElementById("winSound");
 const spinButton=document.getElementById("spinButton");
-
 let spinning=false;
 
-// Разрешаем все звуки после ПЕРВОГО клика
-let audioUnlocked = false;
-function unlockAudio() {
-    [leverSound, spinSound, winSound].forEach(audio => {
-        audio.volume = 0.01;
-        audio.play().catch(()=>{}).then(()=>{
-            audio.pause();
-            audio.currentTime = 0;
-            audio.volume = 1;
-        });
-    });
-    audioUnlocked = true;
-}
-
 spinButton.onclick=()=>{
-    if (!audioUnlocked) unlockAudio();
+// Только разблокировка звуков + рычаг + вращение
+[leverSound, spinSound].forEach(sound => {
+sound.play().catch(()=>{}).then(()=>{sound.pause();sound.currentTime = 0;});
+});
 
-    if(spinning) return;
-    spinning = true;
+if(spinning) return;
+spinning = true;
 
-    leverSound.play();
+leverSound.play();
+spinSound.play();
 
-    localStorage.setItem("lastSpinTime", new Date().getTime());
+localStorage.setItem("lastSpinTime", new Date().getTime());
+const win = selectPrize();
+const selectedIndex = prizes.indexOf(win);
+const sectorSize = 360/prizes.length;
+const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
+wheel.style.transform=`rotate(${targetAngle}deg)`;
 
-    const win = selectPrize();
-    const selectedIndex = prizes.indexOf(win);
-    const sectorSize = 360/prizes.length;
-    const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
-
-    spinSound.play();
-    wheel.style.transform=`rotate(${targetAngle}deg)`;
-
-    setTimeout(()=>{
-        spinSound.pause();
-        spinSound.currentTime=0;
-        winSound.play().catch(()=>{});
-        result.innerHTML="🎉 Вы выиграли: "+win.name+" — Промо: "+win.promo;
-        showMessage(win.name=="Суперприз 100000 бонусов"?"СУПЕРПРИЗ!":"ВЫ ВЫИГРАЛИ!");
-        instruction.style.display="block";
-        for(let i=0;i<200;i++)createFirework();
-        setTimeout(()=>{message.style.display="none"},5000);
-        showCountdown(86400000);
-    },5200);
+setTimeout(()=>{
+spinSound.pause(); spinSound.currentTime=0;
+winSound.play().catch(()=>{});
+result.innerHTML="🎉 Вы выиграли: "+win.name+" — Промо: "+win.promo;
+showMessage(win.name=="Суперприз 100000 бонусов"?"СУПЕРПРИЗ!":"ВЫ ВЫИГРАЛИ!");
+instruction.style.display="block";
+for(let i=0;i<200;i++)createFirework();
+setTimeout(()=>{message.style.display="none"},5000);
+showCountdown(86400000);
+},5200);
 };
 
 const lastSpin = localStorage.getItem("lastSpinTime");
 const now = new Date().getTime();
 if (lastSpin && now - lastSpin < 86400000) {
-    spinning = true;
-    result.innerHTML = "Вы уже крутили сегодня. Приходите завтра!";
-    showCountdown(86400000 - (now - lastSpin));
+spinning = true;
+result.innerHTML = "Вы уже крутили сегодня. Приходите завтра!";
+showCountdown(86400000 - (now - lastSpin));
 }
 
 function showCountdown(ms) {
-    countdown.style.display = "block";
-    const interval = setInterval(() => {
-        ms -= 1000;
-        if (ms <= 0) {
-            clearInterval(interval);
-            countdown.innerHTML = "Можно крутить!";
-            spinning = false;
-            return;
-        }
-        const h = Math.floor(ms / 3600000);
-        const m = Math.floor((ms % 3600000) / 60000);
-        const s = Math.floor((ms % 60000) / 1000);
-        countdown.innerHTML = `Следующая попытка через ${h}ч ${m}м ${s}с`;
-    }, 1000);
+countdown.style.display = "block";
+const interval = setInterval(() => {
+ms -= 1000;
+if (ms <= 0) { clearInterval(interval); countdown.innerHTML = "Можно крутить!"; spinning = false; return; }
+const h = Math.floor(ms / 3600000);
+const m = Math.floor((ms % 3600000) / 60000);
+const s = Math.floor((ms % 60000) / 1000);
+countdown.innerHTML = `Следующая попытка через ${h}ч ${m}м ${s}с`;
+}, 1000);
 }
 
 function selectPrize() {
-    const totalChance = prizes.reduce((sum, prize) => sum + prize.chance, 0);
-    let rand = Math.random() * totalChance;
-    for (let prize of prizes) {
-        if (rand < prize.chance) return prize;
-        rand -= prize.chance;
-    }
+const totalChance = prizes.reduce((sum, prize) => sum + prize.chance, 0);
+let rand = Math.random() * totalChance;
+for (let prize of prizes) { if (rand < prize.chance) return prize; rand -= prize.chance; }
 }
 
 function createFirework(){let c=document.createElement("div");c.className="confetti";c.style.left=window.innerWidth/2+"px";c.style.top=window.innerHeight/2+"px";c.style.setProperty('--x',(Math.random()*600-300)+"px");c.style.setProperty('--y',(Math.random()*600-300)+"px");c.style.background="hsl("+Math.random()*360+",100%,50%)";document.body.appendChild(c);setTimeout(()=>c.remove(),3000)}
