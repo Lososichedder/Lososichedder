@@ -12,8 +12,7 @@ h1 {margin-top:20px;font-size:60px;color:#ffcc00;animation:glow 2s infinite,blin
 @keyframes glow{0%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00}50%{text-shadow:0 0 20px #ffff00,0 0 40px #ffff00}100%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00}}
 #wheel-container {margin:20px auto;width:400px;height:400px;position:relative;display:inline-block;box-shadow:0 0 60px rgba(255,255,0,0.7);border-radius:50%}
 #wheel {width:100%;transition:transform 5s cubic-bezier(0.33, 1, 0.68, 1);border-radius:50%;border:10px solid white}
-.pointer {position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid red;transition:transform 0.1s ease;}
-.pointer.active {transform:translateX(-50%) rotate(-20deg);}
+.pointer {position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid red}
 #lever {position:absolute;top:100px;left:440px;width:20px;height:200px;background:silver;border-radius:10px}
 #lever-ball {position:absolute;top:-30px;left:-15px;width:50px;height:50px;background:red;border-radius:50%;cursor:grab;transition:transform 0.2s ease}
 #result {margin-top:20px;font-size:40px;color:#00ff00;font-family:'Russo One',sans-serif;text-shadow:0 0 15px #00ff00}
@@ -32,7 +31,7 @@ h1 {margin-top:20px;font-size:60px;color:#ffcc00;animation:glow 2s infinite,blin
 <audio id="winSound" src="win-sound.mp3"></audio>
 
 <div style="position:relative;display:inline-block">
-<div id="wheel-container"><div class="pointer" id="pointer"></div><img id="wheel" src="kolyoso.png" alt="Wheel"></div>
+<div id="wheel-container"><div class="pointer"></div><img id="wheel" src="kolyoso.png" alt="Wheel"></div>
 <div id="lever"><div id="lever-ball"></div></div></div>
 
 <div id="result"></div>
@@ -41,24 +40,9 @@ h1 {margin-top:20px;font-size:60px;color:#ffcc00;animation:glow 2s infinite,blin
 <div id="message"></div>
 
 <script>
-const prizes=[
-{name:"Кола",chance:10,promo:"4217"},
-{name:"Онигири с крабом",chance:10,promo:"7351"},
-{name:"Сырные ломтики",chance:5,promo:"1628"},
-{name:"Фри",chance:10,promo:"9046"},
-{name:"Наггетсы",chance:10,promo:"5832"},
-{name:"Маки с лососем",chance:5,promo:"3174"},
-{name:"Запечённый мини-ролл",chance:5,promo:"8462"},
-{name:"Пицца Маргарита",chance:1,promo:"2095"},
-{name:"Крылья 8 шт",chance:1,promo:"7901"},
-{name:"Онигирадзу с крабом",chance:1,promo:"4360"},
-{name:"Филадельфия классическая",chance:0.01,promo:"1203"},
-{name:"1000 бонусов",chance:41.9889,promo:"8888"},
-{name:"Сет 'Венеция'",chance:0.001,promo:"0001"},
-{name:"Суперприз 100000 бонусов",chance:0.0001,promo:"7897"}
-];
+const prizes=[{name:"Кола",promo:"4217"},{name:"Онигири с крабом",promo:"7351"},{name:"Сырные ломтики",promo:"1628"},{name:"Фри",promo:"9046"},{name:"Наггетсы",promo:"5832"},{name:"Маки с лососем",promo:"3174"},{name:"Запечённый мини-ролл",promo:"8462"},{name:"Пицца Маргарита",promo:"2095"},{name:"Крылья 8 шт",promo:"7901"},{name:"Онигирадзу с крабом",promo:"4360"},{name:"Филадельфия классическая",promo:"1203"},{name:"1000 бонусов",promo:"8888"},{name:"Сет 'Венеция'",promo:"0001"},{name:"Суперприз 100000 бонусов",promo:"7897"}];
 
-const wheel=document.getElementById("wheel"),result=document.getElementById("result"),instruction=document.getElementById("instruction"),leverBall=document.getElementById("lever-ball"),message=document.getElementById("message"),countdown=document.getElementById("countdown"),pointer=document.getElementById("pointer");
+const wheel=document.getElementById("wheel"),result=document.getElementById("result"),instruction=document.getElementById("instruction"),leverBall=document.getElementById("lever-ball"),message=document.getElementById("message"),countdown=document.getElementById("countdown");
 const leverSound=document.getElementById("leverSound"),spinSound=document.getElementById("spinSound"),winSound=document.getElementById("winSound");
 
 let spinning=false,pulling=false,startY=0;
@@ -80,7 +64,7 @@ function showCountdown(ms) {
             clearInterval(interval);
             countdown.innerHTML = "Можно крутить!";
             spinning = false;
-            leverBall.style.cursor = "grab";
+            leverBall.style.cursor = "grab"; // Фикс
             return;
         }
         const h = Math.floor(ms / 3600000);
@@ -88,15 +72,6 @@ function showCountdown(ms) {
         const s = Math.floor((ms % 60000) / 1000);
         countdown.innerHTML = `Следующая попытка через ${h}ч ${m}м ${s}с`;
     }, 1000);
-}
-
-function selectPrize() {
-    const totalChance = prizes.reduce((sum, prize) => sum + prize.chance, 0);
-    let rand = Math.random() * totalChance;
-    for (let prize of prizes) {
-        if (rand < prize.chance) return prize;
-        rand -= prize.chance;
-    }
 }
 
 leverBall.onmousedown=e=>{if(!spinning){pulling=true;startY=e.clientY;leverBall.style.cursor="grabbing"}};
@@ -114,21 +89,15 @@ document.onmouseup=()=>{
 
     localStorage.setItem("lastSpinTime", new Date().getTime());
 
-    const win = selectPrize();
-    const selectedIndex = prizes.indexOf(win);
+    const selectedIndex = Math.floor(Math.random()*prizes.length);
+    const win = prizes[selectedIndex];
     const sectorSize = 360/prizes.length;
     const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
 
     spinSound.play();
     wheel.style.transform=`rotate(${targetAngle}deg)`;
 
-    const pointerInterval = setInterval(() => {
-        pointer.classList.toggle("active");
-    }, 100);
-
     setTimeout(()=>{
-        clearInterval(pointerInterval);
-        pointer.classList.remove("active");
         spinSound.pause();
         spinSound.currentTime=0;
         result.innerHTML="🎉 Вы выиграли: "+win.name+" — Промо: "+win.promo;
