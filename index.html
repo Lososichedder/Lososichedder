@@ -12,7 +12,7 @@ body {background:#000;color:white;text-align:center;margin:0;padding:0;overflow:
 #wheel {width:100%;transition:transform 5s cubic-bezier(0.33, 1, 0.68, 1);border-radius:50%;border:10px solid white}
 .pointer {position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid red}
 #result {margin-top:10px;font-size:28px;color:#00ff00;font-family:'Russo One',sans-serif;text-shadow:0 0 15px #00ff00}
-#instruction {margin-top:10px;font-size:20px;color:#ffcc00;text-shadow:0 0 10px #ffcc00;animation:blink 1.5s infinite;font-family:'Bebas Neue',cursive;display:none}
+#instruction {margin-top:10px;font-size:16px;color:#ffcc00;text-shadow:0 0 5px #ffcc00;display:none;line-height:1.5; font-family: 'Russo One', sans-serif;}
 #message {position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);font-size:50px;color:yellow;text-shadow:3px 3px 5px black;display:none;font-family:'Russo One',cursive}
 .confetti {position:fixed;width:15px;height:15px;background:yellow;opacity:.8;border-radius:50%;animation:explode 3s ease-out forwards}
 @keyframes explode{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(0.5);opacity:0}}
@@ -52,7 +52,7 @@ body {background:#000;color:white;text-align:center;margin:0;padding:0;overflow:
 <button id="spinButton">КРУТИТЬ</button>
 
 <div id="result"></div>
-<div id="instruction">Введите этот промо в приложении и заберите приз в течении 24 часов</div>
+<div id="instruction">Введите этот промо в приложении<br>и заберите приз в течение 24 часов</div>
 <div id="countdown"></div>
 <div id="message"></div>
 
@@ -80,23 +80,53 @@ const spinButton=document.getElementById("spinButton");
 
 let spinning=false;
 
-// Fix mobile autoplay policies
-let userInteracted = false;
-document.body.addEventListener('click', () => {
-    if (!userInteracted) {
-        leverSound.play().catch(()=>{});
-        spinSound.play().catch(()=>{});
-        winSound.play().catch(()=>{});
-        leverSound.pause();
+// Разрешаем все звуки после ПЕРВОГО клика
+let audioUnlocked = false;
+function unlockAudio() {
+    [leverSound, spinSound, winSound].forEach(audio => {
+        audio.volume = 0.01;
+        audio.play().catch(()=>{}).then(()=>{
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 1;
+        });
+    });
+    audioUnlocked = true;
+}
+
+spinButton.onclick=()=>{
+    if (!audioUnlocked) unlockAudio();
+
+    if(spinning) return;
+    spinning = true;
+
+    leverSound.play();
+
+    localStorage.setItem("lastSpinTime", new Date().getTime());
+
+    const win = selectPrize();
+    const selectedIndex = prizes.indexOf(win);
+    const sectorSize = 360/prizes.length;
+    const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
+
+    spinSound.play();
+    wheel.style.transform=`rotate(${targetAngle}deg)`;
+
+    setTimeout(()=>{
         spinSound.pause();
-        winSound.pause();
-        userInteracted = true;
-    }
-}, {once: true});
+        spinSound.currentTime=0;
+        winSound.play().catch(()=>{});
+        result.innerHTML="🎉 Вы выиграли: "+win.name+" — Промо: "+win.promo;
+        showMessage(win.name=="Суперприз 100000 бонусов"?"СУПЕРПРИЗ!":"ВЫ ВЫИГРАЛИ!");
+        instruction.style.display="block";
+        for(let i=0;i<200;i++)createFirework();
+        setTimeout(()=>{message.style.display="none"},5000);
+        showCountdown(86400000);
+    },5200);
+};
 
 const lastSpin = localStorage.getItem("lastSpinTime");
 const now = new Date().getTime();
-
 if (lastSpin && now - lastSpin < 86400000) {
     spinning = true;
     result.innerHTML = "Вы уже крутили сегодня. Приходите завтра!";
@@ -128,34 +158,6 @@ function selectPrize() {
         rand -= prize.chance;
     }
 }
-
-spinButton.onclick=()=>{
-    if(spinning) return;
-    spinning = true;
-
-    leverSound.play();
-    localStorage.setItem("lastSpinTime", new Date().getTime());
-
-    const win = selectPrize();
-    const selectedIndex = prizes.indexOf(win);
-    const sectorSize = 360/prizes.length;
-    const targetAngle = 360*10+(360-selectedIndex*sectorSize-sectorSize/2);
-
-    spinSound.play();
-    wheel.style.transform=`rotate(${targetAngle}deg)`;
-
-    setTimeout(()=>{
-        spinSound.pause();
-        spinSound.currentTime=0;
-        winSound.play().catch(()=>{});
-        result.innerHTML="🎉 Вы выиграли: "+win.name+" — Промо: "+win.promo;
-        showMessage(win.name=="Суперприз 100000 бонусов"?"СУПЕРПРИЗ!":"ВЫ ВЫИГРАЛИ!");
-        instruction.style.display="block";
-        for(let i=0;i<200;i++)createFirework();
-        setTimeout(()=>{message.style.display="none"},5000);
-        showCountdown(86400000);
-    },5200);
-};
 
 function createFirework(){let c=document.createElement("div");c.className="confetti";c.style.left=window.innerWidth/2+"px";c.style.top=window.innerHeight/2+"px";c.style.setProperty('--x',(Math.random()*600-300)+"px");c.style.setProperty('--y',(Math.random()*600-300)+"px");c.style.background="hsl("+Math.random()*360+",100%,50%)";document.body.appendChild(c);setTimeout(()=>c.remove(),3000)}
 function showMessage(t){message.textContent=t;message.style.display="block"}
